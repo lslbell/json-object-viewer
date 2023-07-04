@@ -6,7 +6,11 @@ export const mockJson = {
     username: "Bob Jim",
     age: 50,
     address: {
-        line1: "Big city street"
+        line1: "Big city street",
+        line2: "Livi",
+        postcode: {
+            region: 'eh50',
+        }
     }
 }
 
@@ -17,6 +21,7 @@ export interface EditorProps {
 }
 
 export const JsonEditor: React.FC<EditorProps> = ({ code, onChange, onObjectFieldClick }) => {
+    const toJsonSchema = require('to-json-schema');
     const editorRef = React.useRef<monacoEditor.editor.IStandaloneCodeEditor | null>(null);
 
     const editorDidMount: EditorDidMount = (editor, monaco) => {
@@ -33,6 +38,8 @@ export const JsonEditor: React.FC<EditorProps> = ({ code, onChange, onObjectFiel
 
                         console.log('Field name: ' + fieldName)
                         console.log('Field type: ' + typeof fieldValue)
+                        console.log(JSON.stringify(fieldValue, null, 2));
+                        console.log(toJsonSchema(fieldValue));
 
                     }
                 }
@@ -50,7 +57,7 @@ export const JsonEditor: React.FC<EditorProps> = ({ code, onChange, onObjectFiel
         const fieldEnd = lineContent.indexOf('"', position.column - 1);
         const fieldName = lineContent.slice(fieldStart, fieldEnd);
         const jsonCode = model.getValue();
-        
+
         try {
             const parsedJson = JSON.parse(jsonCode);
             const fieldPath = model.getValueInRange({
