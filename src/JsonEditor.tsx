@@ -14,65 +14,39 @@ export const mockJson = {
     }
 }
 
-export interface EditorProps {
-    code: string;
-    onChange: (newCode: string) => void;
-    onObjectFieldClick: (fieldPath: string) => void;
-}
 
-export const JsonEditor: React.FC<EditorProps> = ({ code, onChange, onObjectFieldClick }) => {
+export const JsonEditor = () => {
     const toJsonSchema = require('to-json-schema');
     const editorRef = React.useRef<monacoEditor.editor.IStandaloneCodeEditor | null>(null);
 
     const editorDidMount: EditorDidMount = (editor, monaco) => {
         editorRef.current = editor;
-        editor.onMouseDown((e) => {
+
+        editor.onMouseDown((event) => {
             const model = editor.getModel();
             if (model) {
-                const position = e.target.position;
+                const position = event.target.position;
                 if (position) {
                     const wordAtPosition = model.getWordAtPosition(position);
                     if (wordAtPosition) {
                         const fieldName = wordAtPosition.word;
-                        const fieldValue = getFieldValue(model, position);
+                        const fieldValue = getFieldValue(model, position); //pass in too much of model?
 
                         console.log('Field name: ' + fieldName)
-                        console.log('Field type: ' + typeof fieldValue)
-                        console.log(JSON.stringify(fieldValue, null, 2));
-                        console.log(toJsonSchema(fieldValue));
+                        // console.log(JSON.stringify(fieldValue, null, 2));
+                        // console.log(toJsonSchema(fieldValue));
 
                     }
                 }
             }
         });
-        editor.onDidChangeModelContent(() => {
-            onChange(editor.getValue());
-        });
     };
 
     const getFieldValue = (model: monacoEditor.editor.ITextModel, position: monacoEditor.Position): any => {
-        const lineNumber = position.lineNumber;
-        const lineContent = model.getLineContent(lineNumber);
-        const fieldStart = lineContent.lastIndexOf('"', position.column - 2) + 1;
-        const fieldEnd = lineContent.indexOf('"', position.column - 1);
-        const fieldName = lineContent.slice(fieldStart, fieldEnd);
-        const jsonCode = model.getValue();
+        //traverse model, but can we make use of line pos -- ie 2 diff serviceRequestBlocks :/ -- sol: traverse and verify line position hehehe
 
-        try {
-            const parsedJson = JSON.parse(jsonCode);
-            const fieldPath = model.getValueInRange({
-                startLineNumber: lineNumber,
-                startColumn: fieldStart + 1,
-                endLineNumber: lineNumber,
-                endColumn: fieldEnd + 1,
-            });
-            const fieldPathParts = fieldPath.split('.');
-            const fieldValue = fieldPathParts.reduce((obj, key) => obj[key], parsedJson);
-            return fieldValue;
-        } catch (error) {
-            console.error('Error parsing JSON:', error);
-            return null;
-        }
+
+
     };
 
     return (
