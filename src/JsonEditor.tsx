@@ -23,9 +23,13 @@ export const mockJson = {
             region: 'eh50',
         }
     },
-    accounts: [
+    accounts: [  //problem!! -- schema doesnt contain properties>type>object
         { account1: "personal" },
         { account2: "work" },
+    ],
+    personalities: [
+        "happy",
+        "work"
     ]
 }
 
@@ -33,6 +37,7 @@ export const JsonEditor = () => {
     const toJsonSchema = require('to-json-schema');
     const editorRef = React.useRef<monacoEditor.editor.IStandaloneCodeEditor | null>(null);
     const [schema, setSchema] = React.useState<JSONSchema7>({});
+    const [name, setName] = React.useState<string>();
 
     const editorDidMount: EditorDidMount = (editor, monaco) => {
         editorRef.current = editor;
@@ -59,12 +64,9 @@ export const JsonEditor = () => {
 
         for (let key in json) {
             if (key === fieldName) {
-                console.log('found')
-                console.log(json[key]);
-                console.log(JSON.stringify(toJsonSchema(json[key])));
-
                 //set schema value -> gen form
                 setSchema(toJsonSchema(json[key]));
+                setName(key);
 
                 return;
             }
@@ -78,11 +80,29 @@ export const JsonEditor = () => {
 
     };
 
+    React.useEffect(() => {
+        //if schema is array type with items: object then set to
+        // const schema: JSONschema7 = {
+        //     type: 'array',
+        //     items: {
+        //       type: 'object',
+        //       properties: {
+        //         name: {
+        //           type: 'string',
+        //         },
+        //       },
+        //     },
+        //   };
+        //but with the correct schema items
+        console.log(schema)
+    }, [schema]);
+
     return (
         <Container>
             <Row>
                 <Col>
                     <h1>Generated Form Example</h1>
+                    {name && <p className="fs-3">{name}</p>}
                     <Form
                         schema={schema}
                         onSubmit={() => console.log('submitted!')}
