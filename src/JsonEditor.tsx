@@ -30,9 +30,11 @@ export const JsonEditor = () => {
                     const wordAtPosition = model.getWordAtPosition(position);
                     if (wordAtPosition) {
                         const fieldName = wordAtPosition.word;
-                        const fieldValue = getFieldValue(model, position); //pass in too much of model?
 
-                        console.log('Field name: ' + fieldName)
+                        let json = JSON.parse(model.getValue());
+                        const fieldValue = getFieldValue(json, position, fieldName); //pass in too much of model?
+
+                        // console.log('Field name: ' + fieldName)
                         // console.log(JSON.stringify(fieldValue, null, 2));
                         // console.log(toJsonSchema(fieldValue));
 
@@ -42,10 +44,22 @@ export const JsonEditor = () => {
         });
     };
 
-    const getFieldValue = (model: monacoEditor.editor.ITextModel, position: monacoEditor.Position): any => {
+    const getFieldValue = (json: any, position: monacoEditor.Position, fieldName: string): any => {
         //traverse model, but can we make use of line pos -- ie 2 diff serviceRequestBlocks :/ -- sol: traverse and verify line position hehehe
 
+        for (let key in json) {
+            if (key === fieldName) {
+                console.log('found')
+                console.log(json[key]);
 
+                return;
+            }
+            else if (typeof json[key] === 'object') {
+                getFieldValue(json[key], position, fieldName)
+            }  else if (Array.isArray(json[key])) {
+                getFieldValue(json[key], position, fieldName)
+            } 
+        }
 
     };
 
