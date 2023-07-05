@@ -2,7 +2,7 @@ import * as React from 'react';
 
 //monaco code editor
 import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
-import MonacoEditor, { EditorDidMount } from 'react-monaco-editor';
+import MonacoEditor, { EditorDidMount, MonacoEditorProps } from 'react-monaco-editor';
 
 //json schema to form
 import validator from '@rjsf/validator-ajv8';
@@ -66,6 +66,7 @@ export const JsonEditor = () => {
             if (key === fieldName) {
                 //set schema value -> gen form
                 setSchema(toJsonSchema(json[key]));
+                console.log(json[key])
                 setName(key);
 
                 return;
@@ -79,6 +80,10 @@ export const JsonEditor = () => {
         }
 
     };
+
+    const editorOptions: MonacoEditorProps['options'] = {
+        readOnly: true, 
+      };
 
     React.useEffect(() => {
         //if schema is array type with items: object then set to
@@ -119,6 +124,7 @@ export const JsonEditor = () => {
                         theme="vs-dark"
                         value={JSON.stringify(mockJson, null, 2)}
                         editorDidMount={editorDidMount}
+                        options={editorOptions}
                     />
                 </Col>
             </Row>
