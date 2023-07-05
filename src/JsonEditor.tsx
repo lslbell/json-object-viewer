@@ -85,23 +85,6 @@ export const JsonEditor = () => {
         readOnly: true, 
       };
 
-    React.useEffect(() => {
-        //if schema is array type with items: object then set to
-        // const schema: JSONschema7 = {
-        //     type: 'array',
-        //     items: {
-        //       type: 'object',
-        //       properties: {
-        //         name: {
-        //           type: 'string',
-        //         },
-        //       },
-        //     },
-        //   };
-        //but with the correct schema items
-        console.log(schema)
-    }, [schema]);
-
     return (
         <Container>
             <Row>
