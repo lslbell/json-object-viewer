@@ -1,8 +1,12 @@
-# Getting Started with Create React App
+# Json Object Model to json schema form example
+
+Example for loading dynamic forms from a json schema loaded via clicking json fields
+
+## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+### Available Scripts
 
 In the project directory, you can run:
 
