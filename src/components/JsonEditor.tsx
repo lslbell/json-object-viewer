@@ -1,3 +1,4 @@
+// IMPORTS
 import * as React from 'react';
 
 //monaco code editor
@@ -8,36 +9,24 @@ import MonacoEditor, { EditorDidMount, MonacoEditorProps } from 'react-monaco-ed
 import validator from '@rjsf/validator-ajv8';
 import Form from '@rjsf/core';
 import { JSONSchema7 } from 'json-schema';
-import { RJSFSchema, UiSchema } from '@rjsf/utils';
 
 //bootstrap
 import { Container, Row, Col } from 'react-bootstrap';
 
-export const mockJson = {
-    username: "Bob Jim",
-    age: 50,
-    address: {
-        line1: "Big city street",
-        line2: "Livi",
-        postcode: {
-            region: 'eh50',
-        }
-    },
-    accounts: [  //problem!! -- schema doesnt contain properties>type>object
-        { account1: "personal" },
-        { account2: "work" },
-    ],
-    personalities: [
-        "happy",
-        "work"
-    ]
-}
+//import json example
+import jsonExample from '../json_examples/example.json'
 
 export const JsonEditor = () => {
     const toJsonSchema = require('to-json-schema');
     const editorRef = React.useRef<monacoEditor.editor.IStandaloneCodeEditor | null>(null);
     const [schema, setSchema] = React.useState<JSONSchema7>({});
-    const [name, setName] = React.useState<string>();
+    const [fieldName, setFieldName] = React.useState<string>("");
+    const [formData, setFormData] = React.useState<any>({});
+    const [editorData, setEditorData] = React.useState<any>(JSON.stringify(jsonExample, null, 2));
+
+    const editorOptions: MonacoEditorProps['options'] = {
+        readOnly: true,
+    };
 
     const editorDidMount: EditorDidMount = (editor, monaco) => {
         editorRef.current = editor;
@@ -60,14 +49,13 @@ export const JsonEditor = () => {
     };
 
     const getFieldValue = (json: any, position: monacoEditor.Position, fieldName: string): any => {
-        //traverse model, but can we make use of line pos -- ie 2 diff serviceRequestBlocks :/ -- sol: traverse and verify line position:) 
+        //need to verify line pos
 
         for (let key in json) {
             if (key === fieldName) {
-                //set schema value -> gen form
+                setFieldName(key)
                 setSchema(toJsonSchema(json[key]));
-                console.log(json[key])
-                setName(key);
+                setFormData(json[key]);
 
                 return;
             }
@@ -81,36 +69,57 @@ export const JsonEditor = () => {
 
     };
 
-    const editorOptions: MonacoEditorProps['options'] = {
-        readOnly: true, 
-      };
+    const setFieldValue = (json: any, position: any, fieldName: string, value: any): any => { // refactor -- position: monacoEditor.Position
+        //need to verify line pos
+
+        for (let key in json) {
+            if (key === fieldName) {
+                //update json with new field value
+                
+
+                return;
+            }
+            else if (typeof json[key] === 'object') {
+                getFieldValue(json[key], position, fieldName)
+            }
+            else if (Array.isArray(json[key])) {
+                getFieldValue(json[key], position, fieldName)
+            }
+        }
+    };
+
+    const handleSubmit = (data: any) => {
+        console.log(data.formData);
+        console.log(formData);
+        setFieldValue(formData, 0, fieldName, data.formData);       
+    }
 
     return (
-        <Container>
-            <Row>
-                <Col>
+        <div className="container-fluid">
+            <div className="row-fluid">
+                <div className="col-xs-6">
                     <h1>Generated Form Example</h1>
-                    {name && <p className="fs-3">{name}</p>}
                     <Form
+                        formData={formData}
                         schema={schema}
-                        onSubmit={() => console.log('submitted!')}
+                        onSubmit={handleSubmit}
                         onError={console.error}
                         validator={validator}
                     />
-                </Col>
-                <Col>
+                </div>
+                <div className="col-xs-6">
                     <h1>Editor Example</h1>
                     <MonacoEditor
                         width="800"
                         height="600"
                         language="json"
                         theme="vs-dark"
-                        value={JSON.stringify(mockJson, null, 2)}
+                        value={editorData}
                         editorDidMount={editorDidMount}
                         options={editorOptions}
                     />
-                </Col>
-            </Row>
-        </Container>
+                </div>
+            </div>
+        </div >
     );
 };

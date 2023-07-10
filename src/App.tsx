@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { JsonEditor } from './JsonEditor';
+import { JsonEditor } from './components/JsonEditor';
 
 function App() {
 

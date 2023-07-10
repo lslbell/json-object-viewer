@@ -1,0 +1,38 @@
+{
+    "obj1": {
+        "obj_field1": 1,
+        "obj2": {
+            "obj_field2": 1,
+            "obj3": {
+                "obj_field3": 1,
+                "obj4": {
+                    "obj_field4": 1,
+                    "account": [
+                        {"hi": "sdf"}
+                    ]
+                }
+            }
+        }
+    },
+    "username": "Bob Jim",
+    "age": 50,
+    "address": {
+        "line1": "Big city street",
+        "line2": "Livi",
+        "postcode": {
+            "region": "eh50"
+        }
+    },
+    "accounts": [
+        {
+            "account1": "personal"
+        },
+        {
+            "account2": "work"
+        }
+    ],
+    "personalities": [
+        "happy",
+        "work"
+    ]
+}
